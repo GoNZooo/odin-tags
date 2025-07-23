@@ -94,12 +94,18 @@ declarations_write :: proc(s: ^strings.Builder, pkg: ^ast.Package) {
 				}
 
 				name := file.src[t.names[0].pos.offset:t.names[0].end.offset]
-                line_number := declaration.pos.line
+				line_number := declaration.pos.line
 				#partial switch tt in t.values[0].derived_expr {
 				case ^ast.Proc_Lit:
 					d := declaration
 					function_text := file.src[d.pos.offset:tt.type.pos.offset]
-					function_write(s, file_path = file.fullpath, name = name, function_text = function_text, line_number = line_number)
+					function_write(
+						s,
+						file_path = file.fullpath,
+						name = name,
+						function_text = function_text,
+						line_number = line_number,
+					)
 
 				case ^ast.Distinct_Type:
 					d := declaration
@@ -189,7 +195,7 @@ declarations_write :: proc(s: ^strings.Builder, pkg: ^ast.Package) {
 
 				case ^ast.Helper_Type:
 					d := declaration
-					text := file.src[d.pos.offset: tt.type.pos.offset]
+					text := file.src[d.pos.offset:tt.type.pos.offset]
 					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
 
 				case ^ast.Proc_Type:
@@ -237,7 +243,6 @@ declarations_write :: proc(s: ^strings.Builder, pkg: ^ast.Package) {
 				}
 
 			case:
-			//debug.log("other=%v", t)
 			}
 		}
 	}
@@ -253,8 +258,8 @@ function_write :: proc(s: ^strings.Builder, file_path: string, name: string, fun
 	strings.write_string(s, "\t/^")
 	strings.write_string(s, sanitized_function_text)
 	strings.write_string(s, "/;\"\tline:")
-    strings.write_int(s, line_number)
-    strings.write_byte(s, '\n')
+	strings.write_int(s, line_number)
+	strings.write_byte(s, '\n')
 }
 
 @(private = "file")
@@ -266,8 +271,8 @@ type_write :: proc(s: ^strings.Builder, file_path: string, name: string, line_nu
 	strings.write_string(s, name)
 	strings.write_string(s, " ::")
 	strings.write_string(s, "/;\"\tline:")
-    strings.write_int(s, line_number)
-    strings.write_byte(s, '\n')
+	strings.write_int(s, line_number)
+	strings.write_byte(s, '\n')
 }
 
 @(private = "file")
@@ -278,6 +283,6 @@ plain_write :: proc(s: ^strings.Builder, file_path: string, name: string, text: 
 	strings.write_string(s, "\t/^")
 	strings.write_string(s, text)
 	strings.write_string(s, "/;\"\tline:")
-    strings.write_int(s, line_number)
-    strings.write_byte(s, '\n')
+	strings.write_int(s, line_number)
+	strings.write_byte(s, '\n')
 }
