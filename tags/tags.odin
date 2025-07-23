@@ -12,22 +12,8 @@ import "../cli"
 import "../debug"
 
 Cli_Input_Options :: struct {
-	core_path:   string,
-	vendor_path: string,
 	output_path: string `cli:"o,output-path/required"`,
 }
-
-// Days              : 0
-// Hours             : 0
-// Minutes           : 0
-// Seconds           : 14
-// Milliseconds      : 872
-// Ticks             : 148721713
-// TotalDays         : 0.000172131612268519
-// TotalHours        : 0.00413115869444444
-// TotalMinutes      : 0.247869521666667
-// TotalSeconds      : 14.8721713
-// TotalMilliseconds : 14872.1713
 
 Visitor_Data :: struct {
 	depth: u32,
