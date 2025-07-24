@@ -81,168 +81,184 @@ package_write :: proc(
 	return nil
 }
 
+declarations_write_decl :: proc(file: ^ast.File, s: ^strings.Builder, declaration: ^ast.Stmt) {
+	#partial switch t in declaration.derived_stmt {
+
+	case ^ast.Import_Decl:
+
+	case ^ast.Value_Decl:
+		if len(t.values) == 0 {
+			return
+		}
+
+		name := file.src[t.names[0].pos.offset:t.names[0].end.offset]
+		line_number := declaration.pos.line
+		#partial switch tt in t.values[0].derived_expr {
+		case ^ast.Proc_Lit:
+			d := declaration
+			function_text := file.src[d.pos.offset:tt.type.pos.offset]
+			function_write(
+				s,
+				file_path = file.fullpath,
+				name = name,
+				function_text = function_text,
+				line_number = line_number,
+			)
+
+		case ^ast.Distinct_Type:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Struct_Type:
+			type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
+
+		case ^ast.Union_Type:
+			type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
+
+		case ^ast.Enum_Type:
+			type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
+
+		case ^ast.Proc_Group:
+			type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
+
+		case ^ast.Bit_Field_Type:
+			type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
+
+		case ^ast.Basic_Lit:
+			d := declaration
+			text := file.src[d.pos.offset:d.pos.offset + len(name) + 3]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Array_Type:
+			d := declaration
+			text := file.src[d.pos.offset:tt.open.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Matrix_Type:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Map_Type:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Pointer_Type:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Binary_Expr:
+			d := declaration
+			text := file.src[d.pos.offset:d.pos.offset + len(name) + 3]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Unary_Expr:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Bit_Set_Type:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Comp_Lit:
+			d := declaration
+			end_offset := len(tt.elems) >= 1 ? tt.open.offset : d.end.offset
+			text := file.src[d.pos.offset:end_offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Ident:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Type_Cast:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Ternary_When_Expr:
+			d := declaration
+			text := file.src[d.pos.offset:d.pos.offset + len(name) + 3]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Ternary_If_Expr:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Helper_Type:
+			d := declaration
+			text := file.src[d.pos.offset:tt.type.pos.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Proc_Type:
+			d := declaration
+			text := file.src[d.pos.offset:d.pos.offset + len(name) + 3]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Selector_Expr:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Call_Expr:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Multi_Pointer_Type:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Paren_Expr:
+			d := declaration
+			text := file.src[d.pos.offset:tt.open.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Tag_Expr:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Dynamic_Array_Type:
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case ^ast.Slice_Expr:
+			d := declaration
+			text := file.src[d.pos.offset:tt.open.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+
+		case:
+			debug.log("other(%s)=%v", name, tt)
+		}
+
+	case:
+	}
+
+}
+
 @(private = "file")
 declarations_write :: proc(s: ^strings.Builder, pkg: ^ast.Package) {
 	for _, file in pkg.files {
-		for declaration in file.decls {
-			#partial switch t in declaration.derived_stmt {
-			case ^ast.Import_Decl:
-
-			case ^ast.Value_Decl:
-				if len(t.values) == 0 {
-					continue
+		for decl in file.decls {
+			#partial switch t in decl.derived_stmt {
+			case ^ast.Foreign_Block_Decl:
+				#partial switch tt in t.body.derived {
+				case ^ast.Block_Stmt:
+					for b_decl in tt.stmts {
+						declarations_write_decl(file, s, b_decl)
+					}
 				}
-
-				name := file.src[t.names[0].pos.offset:t.names[0].end.offset]
-				line_number := declaration.pos.line
-				#partial switch tt in t.values[0].derived_expr {
-				case ^ast.Proc_Lit:
-					d := declaration
-					function_text := file.src[d.pos.offset:tt.type.pos.offset]
-					function_write(
-						s,
-						file_path = file.fullpath,
-						name = name,
-						function_text = function_text,
-						line_number = line_number,
-					)
-
-				case ^ast.Distinct_Type:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Struct_Type:
-					type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
-
-				case ^ast.Union_Type:
-					type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
-
-				case ^ast.Enum_Type:
-					type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
-
-				case ^ast.Proc_Group:
-					type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
-
-				case ^ast.Bit_Field_Type:
-					type_write(s, file_path = file.fullpath, name = name, line_number = line_number)
-
-				case ^ast.Basic_Lit:
-					d := declaration
-					text := file.src[d.pos.offset:d.pos.offset + len(name) + 3]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Array_Type:
-					d := declaration
-					text := file.src[d.pos.offset:tt.open.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Matrix_Type:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Map_Type:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Pointer_Type:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Binary_Expr:
-					d := declaration
-					text := file.src[d.pos.offset:d.pos.offset + len(name) + 3]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Unary_Expr:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Bit_Set_Type:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Comp_Lit:
-					d := declaration
-					end_offset := len(tt.elems) >= 1 ? tt.open.offset : d.end.offset
-					text := file.src[d.pos.offset:end_offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Ident:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Type_Cast:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Ternary_When_Expr:
-					d := declaration
-					text := file.src[d.pos.offset:d.pos.offset + len(name) + 3]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Ternary_If_Expr:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Helper_Type:
-					d := declaration
-					text := file.src[d.pos.offset:tt.type.pos.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Proc_Type:
-					d := declaration
-					text := file.src[d.pos.offset:d.pos.offset + len(name) + 3]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Selector_Expr:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Call_Expr:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Multi_Pointer_Type:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Paren_Expr:
-					d := declaration
-					text := file.src[d.pos.offset:tt.open.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Tag_Expr:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Dynamic_Array_Type:
-					d := declaration
-					text := file.src[d.pos.offset:d.end.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case ^ast.Slice_Expr:
-					d := declaration
-					text := file.src[d.pos.offset:tt.open.offset]
-					plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
-
-				case:
-					debug.log("other(%s)=%v", name, tt)
-				}
-
 			case:
+				declarations_write_decl(file, s, decl)
 			}
 		}
 	}
@@ -255,7 +271,7 @@ function_write :: proc(s: ^strings.Builder, file_path: string, name: string, fun
 	strings.write_string(s, name)
 	strings.write_byte(s, '\t')
 	strings.write_string(s, file_path)
-	strings.write_string(s, "\t/^")
+	strings.write_string(s, "\t/")
 	strings.write_string(s, sanitized_function_text)
 	strings.write_string(s, "/;\"\tline:")
 	strings.write_int(s, line_number)
@@ -267,7 +283,7 @@ type_write :: proc(s: ^strings.Builder, file_path: string, name: string, line_nu
 	strings.write_string(s, name)
 	strings.write_byte(s, '\t')
 	strings.write_string(s, file_path)
-	strings.write_string(s, "\t/^")
+	strings.write_string(s, "\t/")
 	strings.write_string(s, name)
 	strings.write_string(s, " ::")
 	strings.write_string(s, "/;\"\tline:")
@@ -280,7 +296,7 @@ plain_write :: proc(s: ^strings.Builder, file_path: string, name: string, text: 
 	strings.write_string(s, name)
 	strings.write_byte(s, '\t')
 	strings.write_string(s, file_path)
-	strings.write_string(s, "\t/^")
+	strings.write_string(s, "\t/")
 	strings.write_string(s, text)
 	strings.write_string(s, "/;\"\tline:")
 	strings.write_int(s, line_number)
