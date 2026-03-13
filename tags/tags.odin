@@ -5,7 +5,6 @@ import "core:log"
 import "core:odin/ast"
 import "core:odin/parser"
 import "core:os"
-import "core:os/os2"
 import "core:strings"
 
 import "../cli"
@@ -49,8 +48,8 @@ main :: proc() {
 	}
 
 	tag_output := strings.to_string(s)
-	write_ok := os.write_entire_file(options.output_path, transmute([]byte)tag_output)
-	if !write_ok {
+	write_err := os.write_entire_file(options.output_path, transmute([]byte)tag_output)
+	if write_err != nil {
 		fmt.printfln("Unable to write to output file '%s'", options.output_path)
 
 		os.exit(1)
@@ -63,14 +62,14 @@ package_write :: proc(
 	package_path: string,
 	allocator := context.allocator,
 ) -> (
-	error: os2.Error,
+	error: os.Error,
 ) {
 	package_value, parse_ok := parser.parse_package_from_path(package_path)
 	if parse_ok {
 		declarations_write(s, package_value)
 	}
 
-	files := os2.read_all_directory_by_path(package_path, allocator = allocator) or_return
+	files := os.read_all_directory_by_path(package_path, allocator = allocator) or_return
 	for f in files {
 		#partial switch f.type {
 		case .Directory:
