@@ -86,12 +86,20 @@ declarations_write_decl :: proc(file: ^ast.File, s: ^strings.Builder, declaratio
 	case ^ast.Import_Decl:
 
 	case ^ast.Value_Decl:
-		if len(t.values) == 0 {
+		if len(t.names) == 0 {
 			return
 		}
 
 		name := file.src[t.names[0].pos.offset:t.names[0].end.offset]
 		line_number := declaration.pos.line
+
+		if len(t.values) == 0 {
+			d := declaration
+			text := file.src[d.pos.offset:d.end.offset]
+			plain_write(s, file_path = file.fullpath, name = name, text = text, line_number = line_number)
+			return
+		}
+
 		#partial switch tt in t.values[0].derived_expr {
 		case ^ast.Proc_Lit:
 			d := declaration
